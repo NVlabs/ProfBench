@@ -57,8 +57,8 @@ def get_mean_pred_error(condition=None, value=None):
     return round(100*np.mean(y_diff),1)
 
 def get_tokens():
-    prompt_tokens = [i["prompt_tokens"] for i in data]
-    completion_tokens = [i["completion_tokens"] for i in data]
+    prompt_tokens = [i["judge_prompt_tokens"] for i in data]
+    completion_tokens = [i["judge_completion_tokens"] for i in data]
     return [round(np.mean(prompt_tokens)), round(np.mean(completion_tokens))]
     
         
@@ -72,7 +72,7 @@ for field in fields:
     for value in fields[field]:
         results[value] = get_metric(condition=field, value=value)
 
-results["Overall"] = get_metric()
+results["All"] = get_metric()
 for model in ["o3", "r1-0528", "grok4"]:
     results[model] = get_mean_pred_error(condition="model", value=model)
 all_biases = [results[model] for model in ["o3", "r1-0528", "grok4"]]

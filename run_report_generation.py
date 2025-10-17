@@ -26,7 +26,6 @@ import argparse
 import random
 
 from datasets import load_dataset
-from huggingface_hub import snapshot_download
 
 from utils import parallel_launcher, instantiate_client
 
@@ -37,8 +36,6 @@ except:
 
 def load_hf_data():
     dataset = load_dataset("nvidia/ProfBench")["test"]
-    snapshot_download(repo_id="nvidia/ProfBench",local_dir=".",repo_type="dataset", allow_patterns="documents/*")
-
     processed_data = []
     for dp in dataset:
         domain = dp["domain"]
@@ -205,7 +202,6 @@ if __name__ == "__main__":
     parser.add_argument('-ak', "--api-key", required=True, help="used as project for google vertexai")
     parser.add_argument('-v', '--version', choices=["debug", "lite", "full"], default="lite")
     parser.add_argument('-l', '--library', choices=["openrouter", "openai", "google"], default="openrouter")
-    parser.add_argument('-uf', '--upload-documents', action='store_true')
     parser.add_argument('-ws', '--web-search', action='store_true')
     parser.add_argument('-r', '--reasoning', action='store_true')
     parser.add_argument('-re', '--reasoning-effort', choices=["low", "medium", "high", "minimal"], default="high", help="this default to high because openrouter use this value to set budget_tokens for anthropic/gemini models")
@@ -218,12 +214,12 @@ if __name__ == "__main__":
     model = args.model
 
     reasoning = args.reasoning if not args.reasoning else args.reasoning_effort
-    upload_documents = int(args.upload_documents)
+    upload_documents = 0 # disable document upload in public release
     web_search = int(args.web_search)
 
     os.makedirs(args.folder, exist_ok=True)
     clean_judge_name = model.replace("/", "_").replace(":", "-")
-    output_filename = f"{args.folder}/{clean_judge_name}_reasoning_{reasoning}_files_{upload_documents}_search_{web_search}.jsonl"
+    output_filename = f"{args.folder}/{clean_judge_name}_reasoning_{reasoning}_search_{web_search}.jsonl"
 
     prompt_data = load_hf_data()
     prompt_data = filter_data(prompt_data, args.version)

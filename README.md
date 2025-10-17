@@ -1,6 +1,6 @@
 ## Overview
 
-ProfBench introduces over 7000 expert-authored response–criterion pairs across 40 tasks in four professional domains in Business and Scientific Research - Physics PhD, Chemistry PhD, Finance MBA, and Consulting MBA - enabling evaluation of open-ended, document-grounded professional tasks beyond exam-style QA or code/math-only settings. Even frontier models find ProfBench challenging: the best report‑generator GPT‑5-high reaches only 65.9% overall, underscoring substantial headroom in realistic professional workflows that require synthesis and long-form analysis.
+ProfBench introduces over 3000 expert-authored response–criterion pairs across 40 tasks in four professional domains in Business and Scientific Research - Physics PhD, Chemistry PhD, Finance MBA, and Consulting MBA - enabling evaluation of open-ended, document-grounded professional tasks beyond exam-style QA or code/math-only settings. Even frontier models find ProfBench challenging: the best report‑generator GPT‑5-high reaches only 65.9% overall, underscoring substantial headroom in realistic professional workflows that require synthesis and long-form analysis.
 
 As part of ProfBench, we propose a robust, affordable LLM‑Judge is constructed by combining a Macro‑F1 measure with a Bias Index to mitigate self‑enhancement bias, achieving as low as <1% cross‑provider bias while reducing evaluation costs by 2−3 orders of magnitude compared to prior rubric benchmarks (costs only $12 for a single run versus ∼$300 for HealthBench and ∼$8000 for PaperBench when all use OpenAI o3), improving fairness and accessibility.
 
@@ -13,7 +13,7 @@ cd ProfBench
 
 pip install -r requirements.txt
 
-# if you want to use google genai library, pip install this after installing other os-specific prerequisites using brew, apt etc
+# if you want to use google genai library, pip install this after installing other os-specific prerequisites using brew, apt-get etc
 pip install google-generativeai
 ```
 

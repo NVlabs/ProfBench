@@ -26,15 +26,18 @@ from tqdm import tqdm
 from openai import OpenAI
 
 
-def instantiate_client(model_library, api_key, timeout):
-    if model_library == "openai":
+def instantiate_client(library, api_key, timeout, base_url=None):
+    if base_url is not None:
+        client = OpenAI(api_key=api_key, timeout=timeout, base_url=base_url)
+    elif library == "openai":
         client = OpenAI(api_key=api_key, timeout=timeout)
-    elif model_library == "openrouter":
+    elif library == "openrouter":
         client = OpenAI(api_key=api_key, timeout=timeout, base_url="https://openrouter.ai/api/v1")
-    elif model_library == "google":
+    elif library == "google":
         from google import genai
         # only tested on vertexai as we only have access to vertexai endpoint
         client = genai.Client(vertexai=True, project=api_key, location="global")
+    client.library = library # set as marker for some inference func to use
     return client
 
 
@@ -46,7 +49,7 @@ def parallel_launcher(func, parallel, retry_attempts, data, output_filename, inf
             existing_indices = set([i['idx'] for i in existing_data])
             print("existing data:", len(existing_data))
             with concurrent.futures.ThreadPoolExecutor(max_workers=parallel) as executor:
-                futures = [executor.submit(func, dp, idx, inference_hyperparameters , client, model) for idx, dp in enumerate(data) if idx not in existing_indices]
+                futures = [executor.submit(func, dp, idx, inference_hyperparameters, client, model) for idx, dp in enumerate(data) if idx not in existing_indices]
                 for future in tqdm(
                     concurrent.futures.as_completed(futures), total=len(futures), desc=f"Attempt {j+1}"
                     ):

@@ -41,8 +41,8 @@ def load_hf_data():
         domain = dp["domain"]
         task_id = dp["task_id"]
         prompt = dp["prompt"]
-        filepaths = dp["filepaths"]
-        processed_data.append({"task_id": task_id, "domain":domain, "prompt": prompt, "filepaths": filepaths, "rubrics": dp["rubrics"]})
+        filepaths = dp["filepaths"] if "filepaths" in dp else []
+        processed_data.append({"task_id": task_id, "domain":domain, "prompt": prompt, "filepaths":filepaths, "rubrics": dp["rubrics"]})
     return processed_data
 
 def filter_data(prompt_data, version):
@@ -151,12 +151,11 @@ def get_openrouter_response(prompt, client=None, model=None, filepaths=None, rea
                 "file_data": f"data:application/pdf;base64,{encode_pdf_to_base64(pdf_path)}"
             }
         } for pdf_path in filepaths]
+        prompt_content += [{ "type": "text", "text": prompt}]
 
     else:
-        prompt_content = []
+        prompt_content = prompt
 
-    prompt_content += [{ "type": "text", "text": prompt}]
-    
     messages = [{"role": "user", "content": prompt_content}]
 
     request_obj = {
@@ -175,16 +174,13 @@ def get_openrouter_response(prompt, client=None, model=None, filepaths=None, rea
     return completion.choices[0].message.content, completion.usage.prompt_tokens, completion.usage.completion_tokens
 
 def get_model_response(dp, idx, inference_hyperparameters, client, model):
-    library = inference_hyperparameters["library"]
 
-    if library == "openrouter":
+    if client.library == "openrouter":
         func = get_openrouter_response
-    elif library == "openai":
+    elif client.library == "openai":
         func = get_openai_response
-    elif library == "google":
+    elif client.library == "google":
         func = get_google_response
-
-    del inference_hyperparameters["library"]
 
     response, prompt_tokens, completion_tokens = func(dp["prompt"], filepaths=dp["filepaths"], client=client, model=model, **inference_hyperparameters)
     
@@ -201,7 +197,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', "--model", required=True)
     parser.add_argument('-ak', "--api-key", required=True, help="used as project for google vertexai")
     parser.add_argument('-v', '--version', choices=["debug", "lite", "full"], default="lite")
-    parser.add_argument('-l', '--library', choices=["openrouter", "openai", "google"], default="openrouter")
+    parser.add_argument('-l', '--library', choices=["openrouter", "openai", "google"], default="openrouter", help="please use openrouter to use chat.completions interface and openai to use responses API")
+    parser.add_argument('-bu', '--base-url', default=None, help="if set, it will instantiate an openai client with this base_url instead of the default for each library")
     parser.add_argument('-ws', '--web-search', action='store_true')
     parser.add_argument('-r', '--reasoning', action='store_true')
     parser.add_argument('-re', '--reasoning-effort', choices=["low", "medium", "high", "minimal"], default="high", help="this default to high because openrouter use this value to set budget_tokens for anthropic/gemini models")
@@ -224,12 +221,11 @@ if __name__ == "__main__":
     prompt_data = load_hf_data()
     prompt_data = filter_data(prompt_data, args.version)
 
-    client = instantiate_client(args.library, args.api_key, args.timeout)
+    client = instantiate_client(args.library, args.api_key, args.timeout, base_url=args.base_url)
 
     inference_hyperparameters = {
         "reasoning": reasoning,
         "upload_documents": upload_documents,
-        "web_search": web_search,
-        "library": args.library
+        "web_search": web_search
     }
     parallel_launcher(get_model_response, args.parallel, args.retry_attempts, prompt_data, output_filename, inference_hyperparameters, client, model)

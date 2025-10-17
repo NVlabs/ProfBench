@@ -61,8 +61,9 @@ if __name__ == "__main__":
 
     parser.add_argument('-f', "--filename", required=True)
     parser.add_argument('-ak', "--api-key", required=True)
-    parser.add_argument('-m', "--model", default="openai/gpt-oss-120b", choices=["openai/gpt-oss-120b"])
+    parser.add_argument('-m', "--model", default="openai/gpt-oss-120b")
     parser.add_argument('-l', '--library', default="openrouter", choices=["openrouter"])
+    parser.add_argument('-bu', '--base-url', default=None, help="if set, it will instantiate an openai client with this base_url instead of the default for each library")
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-p', "--parallel", type=int, default=32)
     parser.add_argument('-t', "--timeout", type=int, default=600)
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     print(output_filename)
     response_criterion_data = load_data(args.filename, args.debug)
 
-    client = instantiate_client(args.library, args.api_key, args.timeout)
+    client = instantiate_client(args.library, args.api_key, args.timeout, base_url=args.base_url)
 
     inference_hyperparameters = {"reasoning": reasoning}
     parallel_launcher(get_criterion_fulfilment, args.parallel, args.retry_attempts, response_criterion_data, output_filename, inference_hyperparameters, client, args.model)

@@ -56,6 +56,7 @@ if __name__ == "__main__":
     parser.add_argument('-m', "--model", required=True)
     parser.add_argument('-ak', "--api-key", required=True)
     parser.add_argument('-l', '--library', choices=["openrouter", "openai"], default="openrouter")
+    parser.add_argument('-bu', '--base-url', default=None, help="if set, it will instantiate an openai client with this base_url instead of the default for each library")
     parser.add_argument('-r', '--reasoning', action='store_true')
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-re', '--reasoning-effort', choices=["low", "medium", "high", "minimal"], default="high", help="this default to high because openrouter use this value to set budget_tokens for anthropic/gemini models")
@@ -75,7 +76,7 @@ if __name__ == "__main__":
     output_filename = f"{args.folder}/{clean_model_name}_reasoning_{reasoning_strength}.jsonl"
 
     response_criterion_data = load_data(args.debug)
-    client = instantiate_client(args.library, args.api_key, args.timeout)
+    client = instantiate_client(args.library, args.api_key, args.timeout, base_url=args.base_url)
 
     inference_hyperparameters = {"reasoning": reasoning_strength}
 

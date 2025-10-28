@@ -1,6 +1,8 @@
 ## Overview
 
-[Paper](https://arxiv.org/abs/2510.18941) | [Data](https://huggingface.co/datasets/nvidia/ProfBench) | [Code](https://github.com/NVlabs/ProfBench)
+[Blog](https://huggingface.co/blog/nvidia/profbench) | [Paper](https://arxiv.org/abs/2510.18941) | [Data](https://huggingface.co/datasets/nvidia/ProfBench) | [Code](https://github.com/NVlabs/ProfBench)
+
+[![Watch the video](https://img.youtube.com/vi/GEPvdq3C54s/maxresdefault.jpg)](https://www.youtube.com/watch?v=GEPvdq3C54s)
 
 ProfBench introduces over 3000 expert-authored response–criterion pairs across 40 tasks in four professional domains in Business and Scientific Research - Physics PhD, Chemistry PhD, Finance MBA, and Consulting MBA - enabling evaluation of open-ended, document-grounded professional tasks beyond exam-style QA or code/math-only settings. Even frontier models find ProfBench challenging: the best report‑generator GPT‑5-high reaches only 65.9% overall, underscoring substantial headroom in realistic professional workflows that require synthesis and long-form analysis.
 

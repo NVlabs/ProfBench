@@ -119,7 +119,7 @@ def get_google_response(prompt, filepaths=None, client=None, model=None, reasoni
     else:
         tools = []
     
-    max_tokens = 64000 if reasoning else 32000
+    max_tokens = 30720
 
     if not reasoning:
         thinking_budget = 0

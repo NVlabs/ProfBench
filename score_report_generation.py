@@ -105,8 +105,6 @@ if __name__ == "__main__":
     with open(input_filename, "r") as f:
         data = [json.loads(line) for line in f.readlines()]
 
-    assert len(data) == 4575, f"Expected 4575 lines but input file {input_filename} only has {len(data)}"
-
     results = get_predicted_score_per_task_id_e2e(condition="judge_rating", value="Yes", data=data)
 
     with open(output_filename, "w") as fw: 

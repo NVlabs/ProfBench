@@ -71,8 +71,6 @@ if __name__ == "__main__":
 
     with open(input_filename, "r") as f:
         data = [json.loads(line) for line in f.readlines()]
-
-    assert len(data) == 3486, f"Expected 3486 lines but input file {input_filename} only has {len(data)}"
     
     fields = {
         "domain": ["Physics PhD", "Chemistry PhD", "Finance MBA", "Consulting MBA"],

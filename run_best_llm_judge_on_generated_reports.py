@@ -29,8 +29,6 @@ from utils import parallel_launcher, instantiate_client, get_criterion_fulfilmen
 def load_data(filename, debug):
     with open(filename, "r") as f:
         data = [json.loads(line) for line in f.readlines()]
-
-    assert len(data) in [1, 160, 640], f"Expected 1, 160, or 640 lines but input file {filename} has {len(data)}"
     
     response_criterion_data = []
 

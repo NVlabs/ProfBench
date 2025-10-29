@@ -22,12 +22,10 @@
 import json
 from collections import defaultdict
 import numpy as np
-import sys
+import argparse
+import os
 
-filename = sys.argv[1] 
 
-with open(filename, "r") as f:
-    data = [json.loads(line) for line in f.readlines()]
 
 weight_to_scale = {"Critical": 4, "Major": 3, "Minor": 2, "Additional": 1}
 
@@ -92,6 +90,24 @@ def get_predicted_score_per_task_id_e2e(condition=None, value=None, data=None):
     domain_average["response_len_chars"] = round(np.mean(response_len))
     return domain_average
 
-judge_rated_model_performance = get_predicted_score_per_task_id_e2e(condition="judge_rating", value="Yes", data=data)
+if __name__ == "__main__":
 
-print(json.dumps(judge_rated_model_performance, indent=4))
+    parser = argparse.ArgumentParser(description="score report generation")
+    parser.add_argument('-f', "--base-filename", required=True)
+    parser.add_argument('-if', "--input-folder", default="judgements_generated")
+    parser.add_argument('-of', "--output-folder", default="scores")
+    args = parser.parse_args()
+
+    input_filename = os.path.join(args.input_folder, args.base_filename)
+    output_filename = os.path.join(args.output_folder, args.base_filename)
+    os.makedirs(args.output_folder, exist_ok=True)
+
+    with open(input_filename, "r") as f:
+        data = [json.loads(line) for line in f.readlines()]
+
+    assert len(data) == 4575, f"Expected 4575 lines but input file {input_filename} only has {len(data)}"
+
+    results = get_predicted_score_per_task_id_e2e(condition="judge_rating", value="Yes", data=data)
+
+    with open(output_filename, "w") as fw: 
+        fw.write(json.dumps(results, indent=4))

@@ -22,12 +22,8 @@
 from sklearn.metrics import f1_score
 import json
 import numpy as np
-import sys
-
-filename = sys.argv[1]
-
-with open(filename, "r") as f:
-    data = [json.loads(line) for line in f.readlines()]
+import os
+import argparse
 
 correct_prefix = "Yes"
 
@@ -60,25 +56,43 @@ def get_tokens():
     prompt_tokens = [i["judge_prompt_tokens"] for i in data]
     completion_tokens = [i["judge_completion_tokens"] for i in data]
     return [round(np.mean(prompt_tokens)), round(np.mean(completion_tokens))]
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="score llm judge")
+    parser.add_argument('-f', "--base-filename", required=True)
+    parser.add_argument('-if', "--input-folder", default="judgements")
+    parser.add_argument('-of', "--output-folder", default="judgements_scores")
+    args = parser.parse_args()
+
+    input_filename = os.path.join(args.input_folder, args.base_filename)
+    output_filename = os.path.join(args.output_folder, args.base_filename)
+    os.makedirs(args.output_folder, exist_ok=True)
+
+    with open(input_filename, "r") as f:
+        data = [json.loads(line) for line in f.readlines()]
+
+    assert len(data) == 3486, f"Expected 3486 lines but input file {input_filename} only has {len(data)}"
     
-        
-fields = {
-    "domain": ["Physics PhD", "Chemistry PhD", "Finance MBA", "Consulting MBA"],
-    "criterion_type": ["Extraction (recall)", "Reasoning", "Style"]
-}
+    fields = {
+        "domain": ["Physics PhD", "Chemistry PhD", "Finance MBA", "Consulting MBA"],
+        "criterion_type": ["Extraction (recall)", "Reasoning", "Style"]
+    }
 
-results = {}
-for field in fields:
-    for value in fields[field]:
-        results[value] = get_metric(condition=field, value=value)
+    results = {}
+    for field in fields:
+        for value in fields[field]:
+            results[value] = get_metric(condition=field, value=value)
 
-results["All"] = get_metric()
-for model in ["o3", "r1-0528", "grok4"]:
-    results[model] = get_mean_pred_error(condition="model", value=model)
-all_biases = [results[model] for model in ["o3", "r1-0528", "grok4"]]
-results["BIAS-INDEX"] = round(max(all_biases) - min(all_biases), 3)
-results["MF1-BI"] = round(results["Overall"]-results["BIAS-INDEX"], 3)
-results["prompt_tokens"] = get_tokens()[0]
-results["completion_tokens"] = get_tokens()[1]
+    results["All"] = get_metric()
+    for model in ["o3", "r1-0528", "grok4"]:
+        results[model] = get_mean_pred_error(condition="model", value=model)
+    all_biases = [results[model] for model in ["o3", "r1-0528", "grok4"]]
+    results["Bias-Index"] = round(max(all_biases) - min(all_biases), 3)
+    results["MF1-BI"] = round(results["All"]-results["Bias-Index"], 3)
+    results["prompt_tokens"] = get_tokens()[0]
+    results["completion_tokens"] = get_tokens()[1]
 
-print(json.dumps(results, indent=4))
+    with open(output_filename, "w") as fw: 
+        fw.write(json.dumps(results, indent=4))
+

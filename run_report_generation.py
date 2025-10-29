@@ -190,7 +190,7 @@ def get_model_response(dp, idx, inference_hyperparameters, client, model):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="run llm judge on provided reports")
+    parser = argparse.ArgumentParser(description="run report generation")
 
     parser.add_argument('-m', "--model", required=True)
     parser.add_argument('-ak', "--api-key", required=True, help="used as project for google vertexai")

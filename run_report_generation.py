@@ -127,7 +127,7 @@ def get_google_response(prompt, filepaths=None, client=None, model=None, reasoni
         thinking_budget = int(0.2*max_tokens)
     elif reasoning == "medium":
         thinking_budget = int(0.5*max_tokens)
-    elif thinking_budget == "high":
+    elif reasoning == "high":
         thinking_budget = int(0.8*max_tokens)
 
     response = client.models.generate_content(model=model, contents=contents, config=GenerateContentConfig(tools=tools, thinking_config=ThinkingConfig(thinking_budget=thinking_budget)))

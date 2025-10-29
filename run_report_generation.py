@@ -100,9 +100,7 @@ def get_openai_response(prompt, client=None, model=None, filepaths=None, reasoni
         input=[{"role": "user", "content": content}],
         max_output_tokens=64000 if reasoning else 32000,
         tools=tools,
-        reasoning={
-            "effort": reasoning
-        }
+        reasoning={"effort": reasoning} if reasoning else {}
     )
     return response.output_text, response.usage.input_tokens, response.usage.output_tokens
 

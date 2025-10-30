@@ -1,6 +1,6 @@
 ## Overview
 
-[Blog](https://huggingface.co/blog/nvidia/profbench) | [Paper](https://arxiv.org/abs/2510.18941) | [Data](https://huggingface.co/datasets/nvidia/ProfBench) | [Code](https://github.com/NVlabs/ProfBench)
+[Leaderboard](https://huggingface.co/spaces/nvidia/ProfBench) | [Blog](https://huggingface.co/blog/nvidia/profbench) | [Paper](https://arxiv.org/abs/2510.18941) | [Data](https://huggingface.co/datasets/nvidia/ProfBench) | [Code](https://github.com/NVlabs/ProfBench)
 
 [![Watch the video](https://img.youtube.com/vi/GEPvdq3C54s/maxresdefault.jpg)](https://www.youtube.com/watch?v=GEPvdq3C54s)
 
